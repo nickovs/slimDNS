@@ -1,0 +1,13 @@
+# Things that Git can safely ignore
+
+# Backup files
+*~
+.#*
+
+# Compiled Python files
+
+*.pyc
+*.pyo
+
+# Junk that macOS leave around
+.DS_Store

@@ -28,8 +28,11 @@ if sys.implementation.name != "micropython":
 
 import time
 from select import select
-from struct import pack_into, unpack_from
-from random import random
+try:
+    from ustruct import pack_into, unpack_from
+except:
+    from struct import pack_into, unpack_from
+
 import socket
 
 # The biggest packet we will process

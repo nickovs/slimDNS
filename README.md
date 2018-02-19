@@ -75,3 +75,8 @@ philosophy of slimDNS includes the following principles.
   not provide a complete implementation since many users will not need
   this. Similarly, we do not provide a _runloop_ since if you are
   offering a network service you probably already have one.
+
+## License
+
+slimDNS is released under the [Apache 2.0
+license](https://www.apache.org/licenses/LICENSE-2.0).

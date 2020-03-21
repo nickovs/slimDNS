@@ -23,10 +23,16 @@ __author__ = "Nicko van Someren"
 __license__ = "Apache-2.0"
 
 import sys
+import time
+
 if sys.implementation.name != "micropython":
     const = lambda x:x
-
-import time
+    ticks_ms = lambda : time.clock() * 1000.
+    ticks_diff = lambda a, b: b - a
+else:
+    ticks_ms = time.ticks_ms
+    ticks_diff = time.ticks_diff
+    
 from select import select
 try:
     from ustruct import pack_into, unpack_from
@@ -336,9 +342,9 @@ class SlimDNSServer:
                 if self.answered:
                     break
                 self.sock.sendto(p, (_MDNS_ADDR, _MDNS_PORT))
-                timeout = time.ticks_ms() + (250 if fast else 1000)
+                timeout = ticks_ms() + (250 if fast else 1000)
                 while not self.answered:
-                    sel_time = time.ticks_diff(timeout, time.ticks_ms())
+                    sel_time = ticks_diff(timeout, ticks_ms())
                     if sel_time <= 0:
                         break
                     (rr, _, _) = select([self.sock], [], [], sel_time/1000.0)

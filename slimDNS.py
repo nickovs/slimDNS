@@ -324,7 +324,7 @@ class SlimDNSServer:
         # each, or sooner if the answer_callback function returns True
         p = bytearray(len(q)+12)
         pack_into("!HHHHHH", p, 0,
-                  1, 0, 1, 0, 0, 0, 0)
+                  1, 0, 1, 0, 0, 0)
         p[12:] = q
 
         self._pending_question = q

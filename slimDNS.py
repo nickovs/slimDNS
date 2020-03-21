@@ -376,3 +376,12 @@ def test():
     local_addr = sta_if.ifconfig()[0]
     server = SlimDNSServer(local_addr, "micropython")
     server.run_forever()
+    
+if __name__ == "__main__":
+    if len(sys.argv) < 3:
+        print("Usage: {} local_addr local_host".format(sys.argv[0]))
+        sys.exit(1)
+    local_addr = sys.argv[1]
+    local_host = sys.argv[2]
+    server = SlimDNSServer(local_addr, local_host)
+    server.run_forever()

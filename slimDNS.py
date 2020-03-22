@@ -297,11 +297,7 @@ class SlimDNSServer:
         # We fake the handling of unicast replies. If the packet came
         # from the mutlicast port we multicast the reply but if it
         # came from any other port we unicast the reply.
-        # self.sock.sendto(buf[:o], (_MDNS_ADDR, _MDNS_PORT) if addr[0] == _MDNS_PORT else addr)
-        
-        # XXX Always multicast the reply. Faked handling of unicast replies
-        # seems to cause replies not reaching its destination in some cases.
-        self.sock.sendto(buf[:o], (_MDNS_ADDR, _MDNS_PORT))
+        self.sock.sendto(buf[:o], (_MDNS_ADDR, _MDNS_PORT) if addr[1] == _MDNS_PORT else addr)
 
     def process_waiting_packets(self):
         # Handle all the packets that can be read immediately and

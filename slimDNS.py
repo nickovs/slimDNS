@@ -23,10 +23,16 @@ __author__ = "Nicko van Someren"
 __license__ = "Apache-2.0"
 
 import sys
+import time
+
 if sys.implementation.name != "micropython":
     const = lambda x:x
-
-import time
+    ticks_ms = lambda : time.clock() * 1000.
+    ticks_diff = lambda a, b: b - a
+else:
+    ticks_ms = time.ticks_ms
+    ticks_diff = time.ticks_diff
+    
 from select import select
 try:
     from ustruct import pack_into, unpack_from
@@ -291,7 +297,7 @@ class SlimDNSServer:
         # We fake the handling of unicast replies. If the packet came
         # from the mutlicast port we multicast the reply but if it
         # came from any other port we unicast the reply.
-        self.sock.sendto(buf[:o], (_MDNS_ADDR, _MDNS_PORT) if addr[0] == _MDNS_PORT else addr)
+        self.sock.sendto(buf[:o], (_MDNS_ADDR, _MDNS_PORT) if addr[1] == _MDNS_PORT else addr)
 
     def process_waiting_packets(self):
         # Handle all the packets that can be read immediately and
@@ -324,7 +330,7 @@ class SlimDNSServer:
         # each, or sooner if the answer_callback function returns True
         p = bytearray(len(q)+12)
         pack_into("!HHHHHH", p, 0,
-                  1, 0, 1, 0, 0, 0, 0)
+                  1, 0, 1, 0, 0, 0)
         p[12:] = q
 
         self._pending_question = q
@@ -336,9 +342,9 @@ class SlimDNSServer:
                 if self.answered:
                     break
                 self.sock.sendto(p, (_MDNS_ADDR, _MDNS_PORT))
-                timeout = time.ticks_ms() + (250 if fast else 1000)
+                timeout = ticks_ms() + (250 if fast else 1000)
                 while not self.answered:
-                    sel_time = time.ticks_diff(timeout, time.ticks_ms())
+                    sel_time = ticks_diff(timeout, ticks_ms())
                     if sel_time <= 0:
                         break
                     (rr, _, _) = select([self.sock], [], [], sel_time/1000.0)
